@@ -65,7 +65,7 @@ namespace ABS
             virtual Gamestate* copyState(Gamestate* uncasted_state)=0; //Required
 
             virtual std::vector<int> getActions(Gamestate* uncasted_state) final {
-                assert (!uncasted_state->terminal); //state must not be terminal
+                assert (!uncasted_state->terminal);
                 return getActions_(uncasted_state);
             };
 
@@ -86,7 +86,7 @@ namespace ABS
             }
 
             std::pair<outcomeMap,double> getOutcomes(Gamestate* state, int action, int timeout_in_ms) {
-                assert (getNumPlayers() == 1); //Only single player games are supported
+                assert (getNumPlayers() == 1); //Only single player games are supported for outcome iteration
 
                 auto start = std::chrono::high_resolution_clock::now();
                 outcomeMap outcomes = {};
@@ -144,19 +144,19 @@ namespace ABS
             };
 
             //For potential ML applications
-            [[nodiscard]] virtual std::vector<int> obsShape() const { //optional [wär aber nett]
+            [[nodiscard]] virtual std::vector<int> obsShape() const { //optional 
                 throw std::runtime_error("Observation Shape not implemented."); //Assuming obs can always be represented as a multi-dim box
             }
 
-            virtual void getObs(ABS::Gamestate* uncasted_state, int* obs) { //optional [wär aber nett]
+            virtual void getObs(ABS::Gamestate* uncasted_state, int* obs) { //optional
                 throw std::runtime_error("Observation not implemented.");
             }
 
-            [[nodiscard]] virtual std::vector<int> actionShape() const { //optional [wär aber nett]
+            [[nodiscard]] virtual std::vector<int> actionShape() const { //optional
                 throw std::runtime_error("Action Shape not implemented."); //Assuming theres always a multi-discrete action space
             }
 
-            [[nodiscard]] virtual int encodeAction(int* decoded_action) { //optional [wär aber nett]. This is to bring the action in the correct format to be used for applyAction. Valid is set to false, if the action is not legal in the given state.
+            [[nodiscard]] virtual int encodeAction(int* decoded_action) { //optional. This is to bring the action in the correct format to be used for applyAction. Valid is set to false, if the action is not legal in the given state.
                 throw std::runtime_error("Action encoding not implemented.");
             }
 
