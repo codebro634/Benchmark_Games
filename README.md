@@ -253,7 +253,7 @@ demonstration shows how to use the Python interface to evaluate a random agent o
 import random
 import game
 
-#Create a Sailing Wind instance of size 15, a horizon length of 50
+#Create a Game of Life instance with a horizon length of 50
 game = game.GameState(model_name="Game Of Life", model_args={"map":"1_IPPC.txt"}, horizon=50)
 
 #Alternatively using the gymnasium interface: gymnasium.make("stochastic_game", model_name="Game Of Life", model_args={"map":"1_IPPC.txt"}, horizon=50).unwrapped

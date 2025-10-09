@@ -261,6 +261,9 @@ class GameState(gym.Env):
     def reset(self, seed = None, rng = None, options = None) -> Tuple[np.ndarray, dict]:
         assert seed is None, "Seed is not supported for this interface. Use the rng parameter instead."
 
+        if self.inited:
+            GameState.lib.fns.close_state(self.state_ptr)
+            
         self.state_ptr = GameState.lib.fns.get_initial_state(self.model_ptr,rng if rng is not None else self.rng_ptr)
         self.inited = True
         return self.getObservation() if self.gym_interface_available else None, {}
