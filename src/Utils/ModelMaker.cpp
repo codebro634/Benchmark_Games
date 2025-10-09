@@ -42,6 +42,10 @@
 #include "../../include/Games/MDPs/ToySoccer.h"
 #include "../../include/Games/TwoPlayerGames/Connect4.h"
 #include "../../include/Games/TwoPlayerGames/Othello.h"
+#include "../../include/Games/MDPs/BinPacking.h"
+#include "../../include/Games/MDPs/Knapsack.h"
+#include "../../include/Games/MDPs/TravellingSalesPerson.h"
+#include "../../include/Games/MDPs/SupplyChain.h"
 
 #include <map>
 #include <set>
@@ -63,7 +67,7 @@ void checkArguments(std::string model, std::map<std::string, std::string> model_
     model_arg_map["randomstart"] = {{"model_type","model_args", "steps"}, {"model_type", "model_args", "steps"}};
 
     //standard envs
-    model_arg_map["num"] = {{"goal", "max_action", "zero_sum"}, {"zero_sum", "goal", "max_action"}};
+    model_arg_map["num"] = {{"goal", "max_action", "zero_sum"}, {"zero_sum", "goal", "max_action", "one_hot_obs"}};
     model_arg_map["saving"] = { {"p", "t"}, {"p", "t"}};
     model_arg_map["ts"] = { {}, {}};
     model_arg_map["che"] = {{"zero_sum"}, {"zero_sum"}};
@@ -98,6 +102,10 @@ void checkArguments(std::string model, std::map<std::string, std::string> model_
     model_arg_map["tam"] = {{"map"}, {"map"}};
     model_arg_map["recon"] = {{"map"}, {"map"}};
     model_arg_map["navigation"] = {{"map"}, {"map", "idle_action"}};
+    model_arg_map["binpacking"] = {{"setup"}, {"setup"}};
+    model_arg_map["knapsack"] = {{"setup"}, {"setup"}};
+    model_arg_map["tsp"] = {{"map"}, {"map"}};
+    model_arg_map["sc"] = {{"setup"}, {"setup"}};
 
     //check if model exists
     if (!model_arg_map.contains(model)) {
@@ -107,7 +115,7 @@ void checkArguments(std::string model, std::map<std::string, std::string> model_
                      "pushyl (Push Your Luck), rt (Racetrack), rfbe (Red Finned Blue Eye), sw (Sailing Wind), saving (Saving), st (Skill Teaching), sa (SysAdmin), "
                      "tam (Tamarisk), ts (Toy Soccer), tr (Traffic), trt (Triangle Tireworld), wf (Wildfire), "
                      "wlp (Wildlife Preserve), ctf (Capture the Flag), che (Chess), c4 (Connect 4), con (Constrictor), ktk (Kill the King), num (Numbers Race),"
-                     "oth (Othello), pus (Pusher), pyl (Pylos), qua (Quarto), ttt (TicTacToe)" << std::endl;
+                     "oth (Othello), pus (Pusher), pyl (Pylos), qua (Quarto), ttt (TicTacToe), binpacking (Bin-Packing), knapsack (Knapsack), tsp (Travelling Salesperson), sc (Supply Chain)" << std::endl;
         throw std::runtime_error("");
     }
 
@@ -211,6 +219,15 @@ std::string decode_alternative_name_formulation(const std::string& model_type) {
     alternatives_map["cooperative recon"] = "recon";
     alternatives_map["cooperativerecon"] = "recon";
     alternatives_map["navigation"] = "navigation";
+    alternatives_map["bin packing"] = "binpacking";
+    alternatives_map["bp"] = "binpacking";
+    alternatives_map["ks"] = "knapsack";
+    alternatives_map["travellingsalesperson"] = "tsp";
+    alternatives_map["travelling salesperson"] = "tsp";
+    alternatives_map["travelling salesman"] = "tsp";
+    alternatives_map["travellingsalesman"] = "tsp";
+    alternatives_map["supplychain"] = "sc";
+    alternatives_map["supply chain"] = "sc";
 
     //model type to lowercase
     std::string model_type_lower = model_type;
@@ -497,6 +514,22 @@ ABS::Model* getModel(std::string model_type, const std::vector<std::string>& m_a
         int price = std::stoi(model_args["p"]);
         int time = std::stoi(model_args["t"]);
         model =  new SAVING::Model(-price,price,time,time);
+    }
+    else if (model_type == "binpacking") {
+        std::string fileName = resolve_file_path(model_args["setup"], "resources/BinPackingSetups");
+        model = new BIN_PACKING::Model(fileName);
+    }
+    else if (model_type == "knapsack") {
+        std::string fileName = resolve_file_path(model_args["setup"], "resources/KnapsackSetups");
+        model = new KNAPSACK::Model(fileName);
+    }
+    else if (model_type == "tsp") {
+        std::string fileName = resolve_file_path(model_args["map"], "resources/TravellingSalesPersonMaps");
+        model = new TRAVELLING_SALES_PERSON::Model(fileName);
+    }
+    else if (model_type == "sc") {
+        std::string filePath = resolve_file_path(model_args["setup"], "resources/SupplyChainSetups");
+        model = new SUPPLY_CHAIN::Model(filePath);
     }
 
     assert (model != nullptr);

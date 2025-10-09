@@ -57,6 +57,14 @@ set(SOURCE_FILES
         src/Games/MDPs/AcademicAdvising.cpp
         include/Games/MDPs/ToySoccer.h
         src/Games/MDPs/ToySoccer.cpp
+        include/Games/MDPs/BinPacking.h
+        src/Games/MDPs/BinPacking.cpp
+        include/Games/MDPs/SupplyChain.h
+        src/Games/MDPs/SupplyChain.cpp
+        include/Games/MDPs/TravellingSalesPerson.h
+        src/Games/MDPs/TravellingSalesPerson.cpp
+        include/Games/MDPs/Knapsack.h
+        src/Games/MDPs/Knapsack.cpp
         include/Utils/Argparse.h
         include/Games/MDPs/Elevators.h
         src/Games/MDPs/Elevators.cpp

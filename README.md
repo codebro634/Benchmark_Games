@@ -1,12 +1,20 @@
 # Benchmark Games
 
 ## Purpose
-Discrete planning research, such as improvements to Monte Carlo Tree Search, usually requires an algorithm's evaluation on a variety of test problems. Furthermore, during development, one might conduct test runs on a few environments but with several hundred or even thousand parameter combinations. This requires being able to efficiently query numerous test problem models.
-To solve this issue, researchers either implement a few problems manually or use a slow simulator for an array of test problems that are written in a high-level descriptive language such as RDDL (by [Scott Sanner, 2011](https://users.cecs.anu.edu.au/~ssanner/IPPC_2011/RDDL.pdf))
-
-To address this issue and to enable faster and more thorough research, we manually implemented 33 planning tasks that can be formalized as Stochastic Games (SG). These 33 tasks are composed of 22 single-agent planning tasks and 11 two-player games. We implemented each environment as efficiently as possible in C++, employing domain-specific optimisations such as bit manipulation when suitable. Since we aim to make this as accessible as possible, we fully avoided using any non-standard-library C++ packages, thus enabling a trivial setup of this project.
-
-Each SG fulfils an interface which is described in more detail later that provides the essentials for planners
+Probabilistic planning research, such as improvements to Monte Carlo Tree Search, is faced
+with two challenges. Firstly, one usually requires an algorithm’s evaluation on a variety of test problems,
+trying several hundred or even thousands of parameter combinations, which in turn requires a large number
+of models that can be efficiently queried. Secondly, one has to identify a suitable set of problems to do the
+evaluation on. This work is made up of two components that together provide a solution for both problems for
+the probabilistic planning community. The first component of our work is software, which provides numerous
+models that are implemented by hand with domain-specific optimizations for optimal runtime. In particular,
+the software component contains 22 parametrized, non-deterministic Markov Decision Processes (MDP),
+which is currently the largest open-source, non-simulator-based stochastic MDP library. The implementation
+provides access to methods required for planning (e.g. copying a state) as well as for reinforcement learning
+(e.g. getting an observation) through a C++ and a Python interface, which itself satisfies the Gymnasium
+interface. The second component of this work contains a detailed description as well as a statistical analysis of
+each model’s properties, which acts as a catalogization of the environments, enabling researchers to quickly
+select a set of environments satisfying their specific criteria.
 
 ## Installation and Build
 
@@ -189,17 +197,19 @@ The project comes with a few preimplemented C++ agents that can be used for eval
 
 ## Preimplemented models
 
-The project comes with a few preimplemented models that can be used for evaluation. These models are located in the `src/Models` directory. The following models are available:
+The project comes with a few preimplemented models that can be used for evaluation. These models are located in the `src/Models` directory and are mostly direct translations to C++ of their corresponding RDDL formulation in the [rddlrepository](https://github.com/pyrddlgym-project/rddlrepository/tree/main). The following models are available:
 
 ### Single Player Games
 
 1. **AcademicAdvising**
+2. **BinPacking**
 2. **CooperativeRecon**
 3. **Crossing Traffic**
 4. **Earth Observation**
 5. **Elevators**
 6. **Game of Life**
 7. **JoinFive**
+8. **Knapsack**
 8. **Manufacturer**
 9. **MultiArmedBandit**
 10. **Navigation**
@@ -209,9 +219,11 @@ The project comes with a few preimplemented models that can be used for evaluati
 14. **SailingWind**
 15. **Saving**
 16. **SkillsTeaching**
+17. **SupplyChain**
 17. **SysAdmin**
 18. **Tamarisk**
 19. **ToySoccer**
+20. **Traveling Salesperson**
 20. **Triangle Tireworld**
 21. **Wildfire**
 22. **WildlifePreserve**
