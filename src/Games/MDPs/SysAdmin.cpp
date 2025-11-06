@@ -1,4 +1,3 @@
-#include <bits/atomic_base.h>
 
 #include "../../../include/Games/MDPs/SysAdmin.h"
 #include <iostream>

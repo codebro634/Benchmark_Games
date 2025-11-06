@@ -10,8 +10,6 @@
 // 		Mike Gimelfarb (mgimelfarb@yahoo.ca)
 // ////////////////////////////////////////////////////////////////////
 
-#include <bits/atomic_base.h>
-
 #include "../../../include/Games/MDPs/BinPacking.h"
 #include <iostream>
 #include <cassert>

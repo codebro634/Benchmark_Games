@@ -49,7 +49,7 @@
 
 #include <map>
 #include <set>
-#include <bits/ranges_algo.h>
+#include <algorithm>
 #include <filesystem>
 
 #include "../../include/Games/Wrapper/Determinization.h"

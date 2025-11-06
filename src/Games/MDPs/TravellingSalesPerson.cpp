@@ -12,9 +12,6 @@
 // 		Mike Gimelfarb (mgimelfarb@yahoo.ca)
 // ////////////////////////////////////////////////////////////////////
 
-
-#include <bits/atomic_base.h>
-
 #include "../../../include/Games/MDPs/TravellingSalesPerson.h"
 #include <iostream>
 #include <cassert>

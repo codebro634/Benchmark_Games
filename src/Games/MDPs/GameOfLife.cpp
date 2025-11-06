@@ -1,5 +1,3 @@
-#include <bits/atomic_base.h>
-
 #include "../../../include/Games/MDPs/GameOfLife.h"
 #include <iostream>
 #include <cassert>

@@ -23,7 +23,6 @@
 // 		Mike Gimelfarb (mgimelfarb@yahoo.ca)
 // //////////////////////////////////////////////////////////////////
 
-#include <bits/atomic_base.h>
 #include <numbers>
 #include "../../../include/Games/MDPs/SupplyChain.h"
 #include <iostream>
