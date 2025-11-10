@@ -19,7 +19,7 @@ select a set of environments satisfying their specific criteria.
 ## Installation and Build
 
 To build the project from source, you will need a C++ compiler supporting the C++20 standard or higher (a lower standard probably works too but we have not tested that). The project
-is self-contained and does not require any additional installation.
+is self-contained and does not require any additional installation. *Note: this installation guide has only been tested for Windows and Linux machines*
 
 To compile with [CMake](https://cmake.org/) you need to have CMake installed on your system. A `CMakeLists.txt` file is already provided for configuring the build.
 
