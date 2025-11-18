@@ -69,7 +69,7 @@ the Navigation environment with map `3_Anand.txt` and a random seed of `42`.
 ./BenchmarkGamesRelease -s 42 -n 100 -m navigation --margs map=3_Anand.txt -a mcts --aargs iterations=200
 ```
 
-In `Utils/ModelMaker.cpp` and `Utils/AgentMaker.cpp` the available arguments for each model/agent can be looked up. If one wants to evaluate an own agent this one, its arguments have to be added in `Utils/AgentMaker.cpp`.
+In `Utils/ModelMaker.cpp` and `Utils/AgentMaker.cpp` the available arguments for each model/agent can be looked up. If one wants to evaluate an own agent this way, its arguments have to be added in `Utils/AgentMaker.cpp`.
 
 ### Manual evaluation of a random agent
 Instead of directly calling the executable, next, we will demonstrate in the following code snippet how to run a random agent for a single episode on a Game of Life instance and output the total reward obtained. 
