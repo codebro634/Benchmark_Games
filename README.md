@@ -60,8 +60,19 @@ Each Gamestate implemented the `ABS::Gamestate` (located in `Gamestate.h`) inter
 
 In the following examples, the will show how write and/or evaluate agents satisfying the `Agent` interface on any model that satisfies the `ABS::Model` interface.
 
+### Automatic evaluation of a Monte Carlo Tree Search Agent
+
+Firstly, it will be demonstrated how this code can be used to evaluate any of the preimplemented agents. For this, the executable simply has to be called with arguments. The following shows an example on how to evaluate an MCTS agent with 100 iterations for 100 games on
+the Navigation environment with map `3_Anand.txt` and a random seed of `42`.
+
+```
+./BenchmarkGamesRelease -s 42 -n 100 -m navigation --margs map=3_Anand.txt -a mcts --aargs iterations=200
+```
+
+In `Utils/ModelMaker.cpp` and `Utils/AgentMaker.cpp` the available arguments for each model/agent can be looked up. If one wants to evaluate an own agent this one, its arguments have to be added in `Utils/AgentMaker.cpp`.
+
 ### Manual evaluation of a random agent
-Firstly, we will demonstrate in the following code snippet how to run a random agent for a single episode on a Game of Life instance and output the total reward obtained. 
+Instead of directly calling the executable, next, we will demonstrate in the following code snippet how to run a random agent for a single episode on a Game of Life instance and output the total reward obtained. 
 
 ```cpp
   //We require a seeded number generator for reproducibility
