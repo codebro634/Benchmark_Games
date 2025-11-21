@@ -16,6 +16,21 @@ interface. The second component of this work contains a detailed description as 
 each model’s properties, which acts as a catalogization of the environments, enabling researchers to quickly
 select a set of environments satisfying their specific criteria.
 
+## Citing the project
+
+```
+@article{benchmarkgamesschmoeckerdockhornrosenhahn,
+  author={Schmöcker, Robin and Dockhorn, Alexander and Rosenhahn, Bodo},
+  journal={IEEE Access}, 
+  title={Accelerating Probabilistic Planning Research: High-Speed Implementations of Stochastic Markov Decision Processes and Their Catalogization}, 
+  year={2025},
+  volume={13},
+  number={},
+  pages={193430-193461},
+  keywords={Planning;Benchmark testing;C++ languages;Games;Stochastic processes;Probabilistic logic;Software;Visualization;Unified modeling language;Runtime;Artificial intelligence;sequential decision-making;benchmark;search},
+  doi={10.1109/ACCESS.2025.3631153}}
+```
+
 ## Installation and Build
 
 To build the project from source, you will need a C++ compiler supporting the C++20 standard or higher (a lower standard probably works too but we have not tested that). The project
