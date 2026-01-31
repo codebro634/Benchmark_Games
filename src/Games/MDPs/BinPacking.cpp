@@ -238,6 +238,15 @@ std::vector<int> Model::getActions_(ABS::Gamestate* uncasted_state) {
 
 std::pair<std::vector<double>,double> Model::applyAction_(ABS::Gamestate* uncasted_state, int action, std::mt19937& rng, std::vector<std::pair<int,int>>* decision_outcomes) {
     auto* state = dynamic_cast<BIN_PACKING::Gamestate*>(uncasted_state);
+
+
+    // compute reward on pre-state:
+    int unused_bins = 0;
+    for (int i = 0; i < nr_of_bins; i++)
+        if (state->total_size_in_bin[i] == 0)
+            unused_bins++;
+
+
     size_t decision_point = 0;
     double prob;
 
@@ -252,21 +261,17 @@ std::pair<std::vector<double>,double> Model::applyAction_(ABS::Gamestate* uncast
         assert (state->total_size_in_bin[action] + state->current_item_size <= bin_capacity[action]);
         state->total_size_in_bin[action] += state->current_item_size;
 
-        // generate next item:
-        size_t next_item;
-        if (decision_outcomes == nullptr) {
-            next_item = random_item(rng);
-        } else {
-            next_item = getDecisionPoint(decision_point, 0, item_sizes.size(), decision_outcomes);
-        }
-        state->current_item_size = item_sizes[next_item];
-
-        prob = item_probabilities[next_item];
     }
-    int unused_bins = 0;
-    for (int i = 0; i < nr_of_bins; i++)
-        if (state->total_size_in_bin[i] == 0)
-            unused_bins++;
+    // generate next item:
+    size_t next_item;
+    if (decision_outcomes == nullptr) {
+        next_item = random_item(rng);
+    } else {
+        next_item = getDecisionPoint(decision_point, 0, item_sizes.size(), decision_outcomes);
+    }
+    state->current_item_size = item_sizes[next_item];
+
+    prob = item_probabilities[next_item];
 
     return {{static_cast<double>(unused_bins)}, prob};
 }

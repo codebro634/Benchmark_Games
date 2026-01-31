@@ -46,6 +46,12 @@
 #include "../../include/Games/MDPs/Knapsack.h"
 #include "../../include/Games/MDPs/TravellingSalesPerson.h"
 #include "../../include/Games/MDPs/SupplyChain.h"
+#include "../../include/Games/MDPs/Sokoban.h"
+#include "../../include/Games/MDPs/EightPuzzle.h"
+#include "../../include/Games/MDPs/BlackjackRddl.h"
+#include "../../include/Games/MDPs/PizzaDelivery.h"
+#include "../../include/Games/MDPs/Blackjack.h"
+#include "../../include/Games/MDPs/Sidewalk.h"
 
 #include <map>
 #include <set>
@@ -106,6 +112,12 @@ void checkArguments(std::string model, std::map<std::string, std::string> model_
     model_arg_map["knapsack"] = {{"setup"}, {"setup"}};
     model_arg_map["tsp"] = {{"map"}, {"map"}};
     model_arg_map["sc"] = {{"setup"}, {"setup"}};
+    model_arg_map["skb"] = {{"map"}, {"map"}};
+    model_arg_map["8pzl"] = {{"setup"}, {"setup"}};
+    model_arg_map["bjrddl"] = {{}, {}};
+    model_arg_map["pizza"] = {{"setup"}, {"setup"}};
+    model_arg_map["blackjack"] = {{}, {"reoccurrences_of_cards", "stop_dealer_at_16", "reward_on_tie"}};
+    model_arg_map["sidewalk"] = {{"setup"}, {"setup"}};
 
     //check if model exists
     if (!model_arg_map.contains(model)) {
@@ -115,7 +127,8 @@ void checkArguments(std::string model, std::map<std::string, std::string> model_
                      "pushyl (Push Your Luck), rt (Racetrack), rfbe (Red Finned Blue Eye), sw (Sailing Wind), saving (Saving), st (Skill Teaching), sa (SysAdmin), "
                      "tam (Tamarisk), ts (Toy Soccer), tr (Traffic), trt (Triangle Tireworld), wf (Wildfire), "
                      "wlp (Wildlife Preserve), ctf (Capture the Flag), che (Chess), c4 (Connect 4), con (Constrictor), ktk (Kill the King), num (Numbers Race),"
-                     "oth (Othello), pus (Pusher), pyl (Pylos), qua (Quarto), ttt (TicTacToe), binpacking (Bin-Packing), knapsack (Knapsack), tsp (Travelling Salesperson), sc (Supply Chain)" << std::endl;
+                     "oth (Othello), pus (Pusher), pyl (Pylos), qua (Quarto), ttt (TicTacToe), binpacking (Bin-Packing), knapsack (Knapsack), tsp (Travelling Salesperson), sc (Supply Chain),"
+                     "skb (Sokoban), 8pzl (Eight Puzzle), bjrddl (Blackjack from .rddl), pizza (Pizza Delivery), bj (Blackjack), sidewalk (Sidewalk)" << std::endl;
         throw std::runtime_error("");
     }
 
@@ -228,6 +241,21 @@ std::string decode_alternative_name_formulation(const std::string& model_type) {
     alternatives_map["travellingsalesman"] = "tsp";
     alternatives_map["supplychain"] = "sc";
     alternatives_map["supply chain"] = "sc";
+    alternatives_map["sokoban"] = "skb";
+    alternatives_map["eight"] = "8pzl";
+    alternatives_map["eight puzzle"] = "8pzl";
+    alternatives_map["eightpuzzle"] = "8pzl";
+    alternatives_map["8puzzle"] = "8pzl";
+    alternatives_map["blackjackrddl"] = "bjrddl";
+    alternatives_map["blackjack rddl"] = "bjrddl";
+    alternatives_map["black jack rddl"] = "bjrddl";
+    alternatives_map["bj rddl"] = "bjrddl";
+    alternatives_map["bjr"] = "bjrddl";
+    alternatives_map["pizza delivery"] = "pizza";
+    alternatives_map["pizzadelivery"] = "pizza";
+    alternatives_map["bj"] = "blackjack";
+    alternatives_map["black jack"] = "blackjack";
+    alternatives_map["side walk"] = "sidewalk";
 
     //model type to lowercase
     std::string model_type_lower = model_type;
@@ -531,6 +559,37 @@ ABS::Model* getModel(std::string model_type, const std::vector<std::string>& m_a
     else if (model_type == "sc") {
         std::string filePath = resolve_file_path(model_args["setup"], "resources/SupplyChainSetups");
         model = new SUPPLY_CHAIN::Model(filePath);
+    }
+    else if (model_type == "skb") {
+        auto setup_file_name = resolve_file_path(model_args["map"], "resources/SokobanMaps");
+        model = new SOKOBAN_GAME::Model(setup_file_name);
+    }
+    else if (model_type == "8pzl") {
+        auto setup_file_name = resolve_file_path(model_args["setup"], "resources/SetupsForEightPuzzle");
+        model = new EIGHT_PUZZLE::Model(setup_file_name);
+    }
+    else if (model_type == "bjrddl") {
+        model = new BLACKJACK_RDDL::Model();
+    }
+    else if (model_type == "pizza") {
+        auto setup_file_name = resolve_file_path(model_args["setup"], "resources/PizzaDeliveryMaps");
+        model = new PIZZA_DELIVERY::Model(setup_file_name);
+    }
+    else if (model_type == "blackjack") {
+        int reoccurrences_of_cards = 4;
+        bool stop_dealer_at_16 = true;
+        double reward_on_tie = 0.0;
+        if (model_args.contains("reoccurrences_of_cards"))
+            reoccurrences_of_cards = std::stoi(model_args["reoccurrences_of_cards"]);
+        if (model_args.contains("stop_dealer_at_16"))
+            stop_dealer_at_16 = std::stoi(model_args["stop_dealer_at_16"]);
+        if (model_args.contains("reward_on_tie"))
+            reward_on_tie = std::stod(model_args["reward_on_tie"]);
+        model = new BLACKJACK::Model(reoccurrences_of_cards, stop_dealer_at_16, reward_on_tie);
+    }
+    else if (model_type == "sidewalk") {
+        auto setup_file_name = resolve_file_path(model_args["setup"], "resources/SidewalkSetups");
+        model = new SIDEWALK::Model(setup_file_name);
     }
 
     assert (model != nullptr);

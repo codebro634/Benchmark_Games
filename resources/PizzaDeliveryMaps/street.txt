@@ -1,0 +1,17 @@
+#location_of_shop: 0
+#initial_nr_of_pizzas_at_shop: 20
+
+#capacity_of_truck: 4
+#drive_prob_of_truck: 0.9
+
+#orders_at_location:
+0 1 1 1 1
+
+#location_connections_list:
+0 1 0 0 0
+1 0 1 0 0
+0 1 0 1 0
+0 0 1 0 1
+0 0 0 1 0
+
+#end:

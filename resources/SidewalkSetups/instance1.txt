@@ -1,0 +1,6 @@
+#sidewalk-x-size: 3
+#starting-x-positions: 2 0 2 1
+#starting-y-positions: 0 0 1 1
+#goal-x-positions: 0 2 1 1
+#max-moving-pedestrians-per-step: 4
+#end:
