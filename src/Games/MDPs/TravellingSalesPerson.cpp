@@ -147,20 +147,24 @@ double Model::getDistance(const ABS::Gamestate* a, const ABS::Gamestate* b) cons
 }
 
 ABS::Gamestate* Model::getInitialState(int num) {
-    auto* res = new TRAVELLING_SALES_PERSON::Gamestate();
-    switch (num) {
-        default:
-            assert (false);
+    auto* state = new TRAVELLING_SALES_PERSON::Gamestate();
+    int o = origin;
+    if (num != 0) {
+        assert (num > 0 and num <= nr_of_nodes);
+        o = num - 1;
     }
-    return res;
+    state->current_node = o;
+    state->visited_nodes = 1 << o;
+    return state;
 }
 
 
 ABS::Gamestate* Model::getInitialState(std::mt19937& rng)
 {
-    auto* state = new TRAVELLING_SALES_PERSON::Gamestate();
-    state->current_node = origin;
-    state->visited_nodes = 1 << origin;
+    const auto state = dynamic_cast<Gamestate*>(getInitialState(uniform_int_distribution<int>(1, nr_of_nodes)(rng)));
+
+    state->visited_nodes |= uniform_int_distribution<long long>(0, (1 << nr_of_nodes) - 1)(rng);
+
     return state;
 }
 
@@ -181,7 +185,7 @@ std::vector<int> Model::getActions_(ABS::Gamestate* uncasted_state) {
     const Gamestate* state = dynamic_cast<Gamestate*>(uncasted_state);
     assert (!!state);
     if (state->visited_nodes == (1 << nr_of_nodes) - 1)
-        return {-1};
+        return {origin};
     std::vector<int> actions;
     for (int i = 0; i < nr_of_nodes; i++)
         if (!state->has_been_visited(i))
@@ -194,16 +198,14 @@ std::pair<std::vector<double>,double> Model::applyAction_(ABS::Gamestate* uncast
     auto* state = dynamic_cast<TRAVELLING_SALES_PERSON::Gamestate*>(uncasted_state);
     assert (!!state);
 
-    if (action == -1) {
-        assert (state->visited_nodes == (1 << nr_of_nodes) - 1);
-        return {{0.0}, 1.0};
-    }
-
     assert (action >= 0 && action < nr_of_nodes);
-    assert (!state->has_been_visited(action));
-    double cost = get_cost(state->current_node, action);
+    assert (action == origin or !state->has_been_visited(action));
+    const double cost = get_cost(state->current_node, action);
     state->current_node = action;
     state->set_visited_node(action);
+
+    if (state->visited_nodes == (1 << nr_of_nodes) - 1 and action == origin)
+        state->terminal = true;
 
     return {{-cost}, 1.0};
 }

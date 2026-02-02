@@ -21,6 +21,13 @@
 // 'https://github.com/pyrddlgym-project/rddlrepository/blob/2d3fd59cd4127e04327c22b174c6e3f0d0eb23cf/rddlrepository/archive/or/SupplyChain/domain.rddl'
 // originally by author(s):
 // 		Mike Gimelfarb (mgimelfarb@yahoo.ca)
+//
+//
+// Functional changes in this implementation:
+//  - We calculate the sales also on the pre-states demand instead of the new demand, thereby
+//      delaying the sales by one game-step relative to the rddl-specification.
+//      This is done, to keep the reward deterministic in the pre-state,
+//      instead of dependent on the partially random demand.
 // //////////////////////////////////////////////////////////////////
 
 #include <numbers>
@@ -276,26 +283,25 @@ double Model::getDistance(const ABS::Gamestate* a, const ABS::Gamestate* b) cons
 
 
 ABS::Gamestate* Model::getInitialState(int num) {
-    auto* res = new SUPPLY_CHAIN::Gamestate();
+    auto* state = new SUPPLY_CHAIN::Gamestate();
     switch (num) {
+        case 0:
+            state->epoch = 0;
+            state->stock_factory = 10;
+            state->warehouses = std::vector(warehouses.size(), FluentWarehouseData {
+                .stock = 0,
+                .demand = 0,
+            });
+            break;
         default:
             assert (false);
     }
-    return res;
+    return state;
 }
 
 
 ABS::Gamestate* Model::getInitialState(std::mt19937& rng) {
-    auto* state = new SUPPLY_CHAIN::Gamestate();
-
-    state->epoch = 0;
-    state->stock_factory = 10;
-    state->warehouses = std::vector(warehouses.size(), FluentWarehouseData {
-        .stock = 0,
-        .demand = 0,
-    });
-
-    return state;
+    return getInitialState(0);
 }
 
 int Model::getNumPlayers() {
@@ -338,6 +344,29 @@ std::pair<std::vector<double>,double> Model::applyAction_(ABS::Gamestate* uncast
     const int produce = decoded_action[0];
 
 
+    // Calculate revenue/reward on pre-state and action as in rddl
+    // EXCEPTION: We calculate the sales also on the pre-states demand, thereby
+    //              delaying the sales by one game-step relative to the rddl-specification.
+    //              This is done, to keep the reward deterministic in the pre-state,
+    //              instead of dependent on the partially random demand.
+    // revenue from sales, minus production cost, storage cost, penalty cost, and shipping cost
+    double revenue = 0.0;
+    for (unsigned int i = 0; i < state->warehouses.size(); i++) {
+        // sales
+        revenue += price * static_cast<double>(state->warehouses[i].demand);
+        // storage cost at warehouses
+        revenue -= warehouses[i].storage_cost * static_cast<double>(max(state->warehouses[i].stock, 0));
+        // penalty cost for negative storage at warehouses (+=, since rhs will not be positive)
+        revenue += penalty_cost * static_cast<double>(min(state->warehouses[i].stock, 0));
+        // shipping costs
+        revenue -= warehouses[i].truck_cost * ceil(static_cast<double>(decoded_action[i + 1]) / static_cast<double>(warehouses[i].truck_capacity));
+    }
+    // production cost
+    revenue -= production_cost * static_cast<double>(produce);
+    // storage cost at factory
+    revenue -= storage_cost_factory * static_cast<double>(state->stock_factory);
+
+
     // Update factory stock
     state->stock_factory = min(state->stock_factory + produce - ship_sum, capacity_factory);
 
@@ -374,26 +403,6 @@ std::pair<std::vector<double>,double> Model::applyAction_(ABS::Gamestate* uncast
 
     // Time advances
     state->epoch += 1;
-
-
-    // revenue from sales, minus production cost, storage cost, penalty cost, and shipping cost
-    double revenue = 0.0;
-    for (unsigned int i = 0; i < state->warehouses.size(); i++) {
-        // sales
-        revenue += price * static_cast<double>(state->warehouses[i].demand);
-        // storage cost at warehouses
-        revenue -= warehouses[i].storage_cost * static_cast<double>(max(state->warehouses[i].stock, 0));
-        // penalty cost for negative storage at warehouses (+=, since rhs will not be positive)
-        revenue += penalty_cost * static_cast<double>(min(state->warehouses[i].stock, 0));
-        // shipping costs
-        revenue -= warehouses[i].truck_cost * ceil(static_cast<double>(decoded_action[i + 1]) / static_cast<double>(warehouses[i].truck_capacity));
-    }
-    // production cost
-    revenue -= production_cost * static_cast<double>(produce);
-    // storage cost at factory
-    revenue -= storage_cost_factory * static_cast<double>(state->stock_factory);
-
-
 
     return {{revenue}, probability};
 }

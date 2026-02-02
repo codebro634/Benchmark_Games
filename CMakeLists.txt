@@ -57,14 +57,6 @@ set(SOURCE_FILES
         src/Games/MDPs/AcademicAdvising.cpp
         include/Games/MDPs/ToySoccer.h
         src/Games/MDPs/ToySoccer.cpp
-        include/Games/MDPs/BinPacking.h
-        src/Games/MDPs/BinPacking.cpp
-        include/Games/MDPs/SupplyChain.h
-        src/Games/MDPs/SupplyChain.cpp
-        include/Games/MDPs/TravellingSalesPerson.h
-        src/Games/MDPs/TravellingSalesPerson.cpp
-        include/Games/MDPs/Knapsack.h
-        src/Games/MDPs/Knapsack.cpp
         include/Utils/Argparse.h
         include/Games/MDPs/Elevators.h
         src/Games/MDPs/Elevators.cpp
@@ -148,6 +140,26 @@ set(SOURCE_FILES
         src/Games/Wrapper/Determinization.cpp
         include/Games/Wrapper/HeuristicsAsReward.h
         src/Games/Wrapper/HeuristicsAsReward.cpp
+        include/Games/MDPs/BinPacking.h
+        src/Games/MDPs/BinPacking.cpp
+        include/Games/MDPs/Knapsack.h
+        src/Games/MDPs/Knapsack.cpp
+        include/Games/MDPs/TravellingSalesPerson.h
+        src/Games/MDPs/TravellingSalesPerson.cpp
+        include/Games/MDPs/SupplyChain.h
+        src/Games/MDPs/SupplyChain.cpp
+        include/Games/MDPs/Sokoban.h
+        src/Games/MDPs/Sokoban.cpp
+        include/Games/MDPs/EightPuzzle.h
+        src/Games/MDPs/EightPuzzle.cpp
+        include/Games/MDPs/BlackjackRddl.h
+        src/Games/MDPs/BlackjackRddl.cpp
+        include/Games/MDPs/PizzaDelivery.h
+        src/Games/MDPs/PizzaDelivery.cpp
+        include/Games/MDPs/Blackjack.h
+        src/Games/MDPs/Blackjack.cpp
+        include/Games/MDPs/Sidewalk.h
+        src/Games/MDPs/Sidewalk.cpp
 )
 
 #Shared lib

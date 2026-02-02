@@ -172,21 +172,26 @@ void Model::printState(ABS::Gamestate* state) {
     const Gamestate* knapsack_state = dynamic_cast<KNAPSACK::Gamestate*>(state);
     assert (!!knapsack_state);
 
-    for (int i = 0; i < nr_of_knapsacks; i++) {
-        std::cout << "knapsack nr. " << i << ':' << std::endl;
-        int value_sum = knapsack_state->total_knapsack_values[i];
-        int weight_sum = knapsack_state->total_knapsack_weights[i];
-        do {
-            int layer = value_sum;
-            if (weight_sum != 0)
-                layer = ((value_sum - 1) % weight_sum) + 1;
-            value_sum -= layer;
-            std::cout << '|';
-            for (int j = 0; j < weight_sum - layer; j++) std::cout << ' ';
-            for (int j = weight_sum - layer; j < weight_sum; j++) std::cout << '#';
-            for (int j = weight_sum; j < knapsack_capacity[i]; j++) std::cout << ' ';
-            std::cout << '|' << std::endl;
-        } while (value_sum > 0);
+    const int total_capacity = std::reduce(knapsack_capacity.begin(), knapsack_capacity.end(), 0);
+    const bool pretty_print = total_capacity < 100 and getMaxV(1) < 30 * total_capacity;
+
+    if (pretty_print) {
+        for (int i = 0; i < nr_of_knapsacks; i++) {
+            std::cout << "knapsack nr. " << i << ':' << std::endl;
+            int value_sum = knapsack_state->total_knapsack_values[i];
+            const int weight_sum = knapsack_state->total_knapsack_weights[i];
+            do {
+                int layer = value_sum;
+                if (weight_sum != 0)
+                    layer = ((value_sum - 1) % weight_sum) + 1;
+                value_sum -= layer;
+                std::cout << '|';
+                for (int j = 0; j < weight_sum - layer; j++) std::cout << ' ';
+                for (int j = weight_sum - layer; j < weight_sum; j++) std::cout << '#';
+                for (int j = weight_sum; j < knapsack_capacity[i]; j++) std::cout << ' ';
+                std::cout << '|' << std::endl;
+            } while (value_sum > 0);
+        }
     }
     std::cout << "value/weight/capacity:";
     for (int i = 0; i < nr_of_knapsacks; i++) {
@@ -194,16 +199,22 @@ void Model::printState(ABS::Gamestate* state) {
         std::cout << '/' << knapsack_state->total_knapsack_weights[i];
         std::cout << '/' << knapsack_capacity[i];
     }
-    std::cout << std::endl << "current item:" << std::endl;
-    int remaining_value = knapsack_state->current_item_value;
-    while (remaining_value > 0) {
-        int layer = ((remaining_value - 1) % knapsack_state->current_item_weight) + 1;
-        remaining_value -= layer;
-        std::cout << '|';
-        for (int j = 0; j < knapsack_state->current_item_weight - layer; j++) std::cout << ' ';
-        for (int j = knapsack_state->current_item_weight - layer; j < knapsack_state->current_item_weight; j++) std::cout << '#';
-        std::cout << '|' << std::endl;
+    std::cout << std::endl << "current item:";
+    if (pretty_print) {
+        std::cout << std::endl;
+        int remaining_value = knapsack_state->current_item_value;
+        while (remaining_value > 0) {
+            const int layer = ((remaining_value - 1) % knapsack_state->current_item_weight) + 1;
+            remaining_value -= layer;
+            std::cout << '|';
+            for (int j = 0; j < knapsack_state->current_item_weight - layer; j++) std::cout << ' ';
+            for (int j = knapsack_state->current_item_weight - layer; j < knapsack_state->current_item_weight; j++) std::cout << '#';
+            std::cout << '|' << std::endl;
+        }
+    } else {
+        std::cout << "value/weight:\t" << knapsack_state->current_item_value << '/' << knapsack_state->current_item_weight;
     }
+    std::cout << std::endl;
 }
 
 
@@ -277,6 +288,11 @@ std::vector<int> Model::getActions_(ABS::Gamestate* uncasted_state) {
 std::pair<std::vector<double>,double> Model::applyAction_(ABS::Gamestate* uncasted_state, int action, std::mt19937& rng, std::vector<std::pair<int,int>>* decision_outcomes) {
     auto* state = dynamic_cast<KNAPSACK::Gamestate*>(uncasted_state);
 
+    // compute reward on pre-state
+    int total_value_sum = 0; // aka reward
+    for (int i = 0; i < nr_of_knapsacks; i++)
+        total_value_sum += state->total_knapsack_values[i];
+
     if (action != -1) {
         // put current item into the knapsack chosen by action:
         assert(action >= 0 && action < nr_of_knapsacks);
@@ -291,16 +307,13 @@ std::pair<std::vector<double>,double> Model::applyAction_(ABS::Gamestate* uncast
         next_item = random_item(rng);
     } else {
         size_t decision_point = 0;
-        next_item = getDecisionPoint(decision_point, 0, item_weights.size(), decision_outcomes);
+        next_item = getDecisionPoint(decision_point, 0, item_weights.size() - 1, decision_outcomes);
     }
     state->current_item_weight = item_weights[next_item];
     state->current_item_value = item_values[next_item];
 
     double prob = item_probabilities[next_item];
 
-    int total_value_sum = 0; // aka reward
-    for (int i = 0; i < nr_of_knapsacks; i++)
-        total_value_sum += state->total_knapsack_values[i];
 
     return {{static_cast<double>(total_value_sum)}, prob};
 }
