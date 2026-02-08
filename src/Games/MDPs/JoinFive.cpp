@@ -162,7 +162,7 @@ Model::Model(bool joint, bool exit_on_out_of_bounds, bool decoupled_action_space
         {{0, -1}, {1, 0, 0}},
 
         {{1, 1}, {2, 0, 0}}, //diagonal left
-        {{-1, -1}, {2, -1, -1}},
+        {{-1, -1}, {2, 1, 1}},
 
         {{1, -1}, {3, -1, 0}}, //diagonal right
         {{-1, 1}, {3, 0, -1}},
